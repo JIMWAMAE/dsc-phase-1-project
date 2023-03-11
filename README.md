@@ -345,9 +345,9 @@ conn.close()
 3. Different writters and dirrectors perfom differently based on factors such as experience and expertise in the industry by looking at their average rating movies perfomance.
 4. Movie budget and revenue genaration are directly related where high budget generates more revenue.
 ### Recommendations
- 1. The studio should aim at producing movies with relatively short runtime as it is inversely related to average rating.
- 2. The studio should aim at producing the top preffered genres that have a high average rating as it will in the long run facilitate movie success.
- 3. The studio should aim at using the top directors and writters according to experience in the industry according to their average ratings.
+ 1. The studio should aim at producing movies with relatively short runtime as it is inversely related to average rating. This is because the movies with short runtimes ended up having more average ratings. This will entail avoiding unnecesary scenes and being brief and on point with the shooting.
+ 2. The studio should aim at producing the top preffered genres that have a high average rating which means they will generate high profits compared to the relatively unwatched genres.
+ 3. The studio should aim at using the top directors and writters according to experience in the industry according to their average ratings as they will enable the studio to produce top tier movie quality that will in turn generate better returns for the business.
  4. The studio should aim at assigning the required budget and not under funding their movie projects since from the data movies with high budgets generated higher revenue.      
 ### Summary
 In this project we have familiarized with the movie industry and the factors that affect the movie success so as to advise microsoft movie studios in their start up.
