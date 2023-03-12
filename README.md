@@ -21,172 +21,7 @@ We have been provided with various data sets for the study. This section will gi
 2. The second data set is the movie budget csv file(https://github.com/JIMWAMAE/dsc-phase-1-project-v2-4/blob/master/zippedData/im.db) that will help us visualize revenue generated as well as the budget allocated for the movies.
 ### 1 . Effect of runtime minutes on movie average rating.
 Using this analysis we are aiming to identify any relationship available between the runtime of a movie and the average rating it ends up receiving. It will help us advise the company on whether to produce long movies or relatively shorter movies
-#### Data Preparation
 
-```python
-#importing the relevant libraries
-import sqlite3
-import pandas as pd
-```
-```python
-# connecting to the database
-conn = sqlite3.connect('zippedData/im.db')
-cur =conn.cursor()
-```
-```python
-# Querying the database
-df = pd.read_sql (""" SELECT * FROM movie_basics
-JOIN movie_ratings
-USING (movie_id) """,conn)
-df.head(18)
-movie_id	primary_title	original_title	start_year	runtime_minutes	genres	averagerating	numvotes
-0	tt0063540	Sunghursh	Sunghursh	2013	175.0	Action,Crime,Drama	7.0	77
-1	tt0066787	One Day Before the Rainy Season	Ashad Ka Ek Din	2019	114.0	Biography,Drama	7.2	43
-2	tt0069049	The Other Side of the Wind	The Other Side of the Wind	2018	122.0	Drama	6.9	4517
-3	tt0069204	Sabse Bada Sukh	Sabse Bada Sukh	2018	NaN	Comedy,Drama	6.1	13
-4	tt0100275	The Wandering Soap Opera	La Telenovela Errante	2017	80.0	Comedy,Drama,Fantasy	6.5	119
-5	tt0112502	Bigfoot	Bigfoot	2017	NaN	Horror,Thriller	4.1	32
-6	tt0137204	Joe Finds Grace	Joe Finds Grace	2017	83.0	Adventure,Animation,Comedy	8.1	263
-7	tt0146592	Pál Adrienn	Pál Adrienn	2010	136.0	Drama	6.8	451
-8	tt0154039	So Much for Justice!	Oda az igazság	2010	100.0	History	4.6	64
-9	tt0159369	Cooper and Hemingway: The True Gen	Cooper and Hemingway: The True Gen	2013	180.0	Documentary	7.6	53
-10	tt0162942	Children of the Green Dragon	A zöld sárkány gyermekei	2010	89.0	Drama	6.9	120
-11	tt0170651	T.G.M. - osvoboditel	T.G.M. - osvoboditel	2018	60.0	Documentary	7.5	6
-12	tt0176694	The Tragedy of Man	Az ember tragédiája	2011	160.0	Animation,Drama,History	7.8	584
-13	tt0192528	Heaven & Hell	Reverse Heaven	2018	104.0	Drama	4.0	72
-14	tt0230212	The Final Journey	The Final Journey	2010	120.0	Drama	8.8	8
-15	tt0247643	Los pájaros se van con la muerte	Los pájaros se van con la muerte	2011	110.0	Drama,Mystery	4.0	12
-16	tt0249516	Foodfight!	Foodfight!	2012	91.0	Action,Animation,Comedy	1.9	8248
-17	tt0250404	Godfather	Godfather	2012	NaN	Crime,Drama	6.7	236
-```
-#### DATA CLEANING
-
-```python
-# We begin with checking for duplicates in our data
-df.duplicated().value_counts()
-# Since it returned that there are no duplicated values in the data frame 
-# we proceed with checking for Nan values
-False    73856
-dtype: int64
-```
-```python
-# check for nan values
-df.isna().sum()
-movie_id              0
-primary_title         0
-original_title        0
-start_year            0
-runtime_minutes    7620
-genres              804
-averagerating         0
-numvotes              0
-dtype: int64
-```
-The data subset contains null values in run time minutes and genre with each having 7620 and 804 respectively. We will therefore proceed with dealing with the missing data by further exploring what data is missing and the effect of the missing data for our analysis.
-
-```python
-#checking null values in run_time.
-df[df['runtime_minutes'].isna()]
-movie_id	primary_title	original_title	start_year	runtime_minutes	genres	averagerating	numvotes
-3	tt0069204	Sabse Bada Sukh	Sabse Bada Sukh	2018	NaN	Comedy,Drama	6.1	13
-5	tt0112502	Bigfoot	Bigfoot	2017	NaN	Horror,Thriller	4.1	32
-17	tt0250404	Godfather	Godfather	2012	NaN	Crime,Drama	6.7	236
-21	tt0263814	On kadin	On kadin	2019	NaN	Drama	7.1	100
-26	tt0285423	Abolição	Abolição	2019	NaN	Documentary	7.4	35
-...	...	...	...	...	...	...	...	...
-73828	tt9899290	Band Together with Logic	Band Together with Logic	2019	NaN	Documentary	8.7	10
-73830	tt9899850	The Agitation	Ashoftegi	2019	NaN	Drama,Thriller	4.9	14
-73844	tt9905796	July Kaatril	July Kaatril	2019	NaN	Romance	9.0	5
-73853	tt9914642	Albatross	Albatross	2017	NaN	Documentary	8.5	8
-73854	tt9914942	La vida sense la Sara Amat	La vida sense la Sara Amat	2019	NaN	None	6.6	5
-7620 rows × 8 columns
-```
-
-```python
-# checking the null values in genre
-df[df['genres'].isna()]
-movie_id	primary_title	original_title	start_year	runtime_minutes	genres	averagerating	numvotes
-18	tt0253093	Gangavataran	Gangavataran	2018	134.0	None	6.6	8
-29	tt0306058	Second Coming	Second Coming	2012	95.0	None	5.5	20
-33	tt0326592	The Overnight	The Overnight	2010	88.0	None	7.5	24
-37	tt0330811	Regret Not Speaking	Regret Not Speaking	2011	NaN	None	6.2	10
-38	tt0330987	Tiden är en dröm, del 2	Tiden är en dröm, del 2	2014	109.0	None	6.3	6
-...	...	...	...	...	...	...	...	...
-73644	tt9742106	The Cat in Their Arms	Neko wa Daku Mono	2018	NaN	None	4.5	8
-73752	tt9828428	Anjali CBI	Anjali CBI	2019	NaN	None	7.6	20
-73798	tt9866736	Rise: Ini Kalilah	Rise: Ini Kalilah	2018	NaN	None	5.8	11
-73805	tt9876160	Koridor bessmertiya	Koridor bessmertiya	2019	125.0	None	5.4	45
-73854	tt9914942	La vida sense la Sara Amat	La vida sense la Sara Amat	2019	NaN	None	6.6	5
-804 rows × 8 columns
-```
-
-This gives us a visualisation of what is actually missing which is the duration that a movie lasts. For the 7620 movies we have not been provided with the runtime . This missing data translates to 10% of the total data for run time and 1% for genre . We will therefore proceed with droping the rows containing null values.
-
-```python
-#dropping the missing rows of data
-df = df.dropna()
-# Checking for missing values in the dataset
-df.isna().sum()
-movie_id           0
-primary_title      0
-original_title     0
-start_year         0
-runtime_minutes    0
-genres             0
-averagerating      0
-numvotes           0
-dtype: int64
-```
-Our data set is now free from missing values and duplicates and we can threfore proceed with data exploration.
-#### Data exploration
-Data exloration will help us in highlighting the patterns and relations in our data set. We will explore the data set in an unstructured way to uncover patterns, characteristics, and points of interest to help us identify the films that are curently doing well in the curent market. This process isn’t meant to reveal every bit of information that this dataset holds, but rather to help create a broad picture of important trends and major factors that facilitate the success of a film.
-
-```python
-# Checking basic descriptive statistics
-df.describe()
-start_year	runtime_minutes	averagerating	numvotes
-count	65720.000000	65720.000000	65720.000000	6.572000e+04
-mean	2014.258065	94.732273	6.320902	3.954674e+03
-std	2.600143	209.377017	1.458878	3.208823e+04
-min	2010.000000	3.000000	1.000000	5.000000e+00
-25%	2012.000000	81.000000	5.500000	1.600000e+01
-50%	2014.000000	91.000000	6.500000	6.200000e+01
-75%	2016.000000	104.000000	7.300000	3.520000e+02
-max	2019.000000	51420.000000	10.000000	1.841066e+06
-```
-From the above data we can identify some important information such as the average duration that a film runs by the mean value which is 95 minutes while the median is at 91 minutes showing that the mean is positively skewed. It is also evident that we have possible outliers based on the min duration and the max duration.
-
-```python
-# Visualizing outliers using box plots
-import matplotlib.pyplot as plt
-%matplotlib inline
-plt.style.use("ggplot")
-plt.boxplot(df.runtime_minutes)
-plt.title('Runtime box plot')
-plt.show()
-```
-```python
-image.png
-```
-```python
-#dealing with the outliers
-df1 =df[df['runtime_minutes'].isin(range(55,130))]
-plt.style.use("ggplot")
-plt.boxplot(df1.runtime_minutes)
-plt.ylabel('Runtime in minutes')
-plt.title('Runtime box plot')
-plt.show()
-
-```
-```python
-image.png 
-```
-From the above figures we have visualised the outliers in the data and eliminated them so as to have a data set that is free from outragious values that would affect our study.
-
-Having cleaned the data set we will now proceed with our analysis guided by our objectives so as to come up with the summary of findings
-
-##### Getting started
-Having cleaned the data we will now proceed with the analysis.
 
 1. Covariance
 With covariance we want to look at two variables (runtime and average rating) to get an idea about how they change together. This will help us identify how the two variables vary together.
@@ -226,7 +61,8 @@ plt.ylabel('count')
 plt.title('Average rating')
 plt.show()
 ```
-
+![Runtime_minutes](https://github.com/JIMWAMAE/dsc-phase-1-project/blob/master/img/output.png)
+![Average_Rating](https://github.com/JIMWAMAE/dsc-phase-1-project/blob/master/Average_rating.png)
 ##### Conclusion
 From the covariance we get to identify a negative covariance between the the runtime and average ratings which signifies that they are inversely related . Therefore movies with shorter runtime tend to receive higher ratings.
 
@@ -257,58 +93,9 @@ Name: genres, dtype: int64
 ```
 Having obtained a significant sample from the population of the genre count we will proceed with grouping our data using the genres so as to obtain a dataset that will enable us to calculate the average rating per genre.
 
-```python
-''' This code aims to select only the movies in the sample genre 
-we created and puting them in a dataframe which is a summary of the popular genres'''
-options = ['Drama',
-'Comedy',
-'Documentary',
-'Comedy,Drama',
-'Horror',
-'Drama,Romance',
-'Thriller',
-'Comedy,Drama,Romance',
-'Comedy,Romance',
-'Horror,Thriller',
-'Drama,Thriller',
-'Action']
-dfg = df1[df1['genres'].isin(options)]
-dfg
-movie_id	primary_title	original_title	start_year	runtime_minutes	genres	averagerating	numvotes
-2	tt0069049	The Other Side of the Wind	The Other Side of the Wind	2018	122.0	Drama	6.9	4517
-10	tt0162942	Children of the Green Dragon	A zöld sárkány gyermekei	2010	89.0	Drama	6.9	120
-11	tt0170651	T.G.M. - osvoboditel	T.G.M. - osvoboditel	2018	60.0	Documentary	7.5	6
-13	tt0192528	Heaven & Hell	Reverse Heaven	2018	104.0	Drama	4.0	72
-14	tt0230212	The Final Journey	The Final Journey	2010	120.0	Drama	8.8	8
-...	...	...	...	...	...	...	...	...
-73846	tt9908960	Pliusas	Pliusas	2018	90.0	Comedy	4.2	13
-73847	tt9910502	Hayatta Olmaz	Hayatta Olmaz	2019	97.0	Comedy	7.0	9
-73850	tt9913056	Swarm Season	Swarm Season	2019	86.0	Documentary	6.2	5
-73851	tt9913084	Diabolik sono io	Diabolik sono io	2019	75.0	Documentary	6.2	6
-73855	tt9916160	Drømmeland	Drømmeland	2019	72.0	Documentary	6.5	11
-32680 rows × 8 columns
-```
 
-```python
-# This code aims at displaying the grouped data frame that will be grouped by genre and movie id
-genre_grouping = dfg.groupby(['genres','movie_id'])
-genre_grouping1 = genre_grouping.first()
-genre_grouping1
-primary_title	original_title	start_year	runtime_minutes	averagerating	numvotes
-genres	movie_id						
-Action	tt0439801	Segurança Nacional	Segurança Nacional	2010	86.0	3.3	260
-tt0810815	Cross the Line	Cross the Line	2010	87.0	3.9	39
-tt0846004	Gangster Exchange	Gangster Exchange	2010	95.0	4.6	436
-tt0929742	Deep Gold 3D	Deep Gold	2011	86.0	3.3	315
-tt0977639	Boyle Heights	Boyle Heights	2010	101.0	4.6	9
-...	...	...	...	...	...	...	...
-Thriller	tt9795264	Risknamaa	Risknamaa	2019	123.0	8.0	9
-tt9805504	Breakaway	Otryv	2019	85.0	4.9	75
-tt9818000	Girl Dorm	Girl Dorm	2019	88.0	6.0	25
-tt9855990	Nightmare Tenant	Nightmare Tenant	2018	90.0	6.0	98
-tt9894098	Sathru	Sathru	2019	129.0	6.3	128
-32680 rows × 6 columns
-```
+
+
 
 Having grouped the data we will now proceed with tabulating the averagerating mean per genre.
 
@@ -344,6 +131,7 @@ plt.title('Movie Genre')
 ;
 ''
 ```
+![Top_genre](https://github.com/JIMWAMAE/dsc-phase-1-project/blob/master/img/Movie%20Genre.png)
 
 ##### Conclusion
 In the movie industry there are various genres which all perfom differently in terms of the average rating . We have used the data provided so as to identify the top perfoming genres according to rating . The top perfoming genre happens to be Documentary and drama with an average rating of above 6. It is therefore advised that prior to deciding what movie to produce in the studio always concider what genre so as to achieve the target rating and also to make the best out of the business.
@@ -351,67 +139,6 @@ In the movie industry there are various genres which all perfom differently in t
 #### 3. Effect of directors and writters selection towards movie success.
 This study seeks to identify the effect of using different directors and writteres for a movie creation. All the directors and writters have different experiences in the industry and choosing an experienced one with a good average rating will influence the quality of your movie and in turn a great rating and revenue generation.
 
-```python
-# Visualizing the table directors
-df3 =  pd.read_sql (""" SELECT * FROM directors
- """,conn)
-df3.head(18)
-movie_id	person_id
-0	tt0285252	nm0899854
-1	tt0462036	nm1940585
-2	tt0835418	nm0151540
-3	tt0835418	nm0151540
-4	tt0878654	nm0089502
-5	tt0878654	nm2291498
-6	tt0878654	nm2292011
-7	tt0879859	nm2416460
-8	tt0996958	nm2286991
-9	tt0996958	nm2286991
-10	tt0999913	nm0527109
-11	tt0999913	nm0527109
-12	tt0999913	nm0527109
-13	tt0999913	nm0527109
-14	tt10003792	nm10539228
-15	tt10005130	nm10540239
-16	tt10005130	nm10540239
-17	tt10005378	nm9232888
-```
-```python
-# Checking for duplicates
-df3.person_id.duplicated().value_counts()
-True     181921
-False    109253
-Name: person_id, dtype: int64
-```
-```python
-# Querying the tables so as to deal with duplicates by grouping the directors
-df2 = pd.read_sql (""" SELECT primary_name,person_id AS Director_id,movie_id,runtime_minutes,averagerating FROM movie_basics
-JOIN movie_ratings
-USING (movie_id)
-JOIN directors
-USING (movie_id)
-JOIN persons
-USING (person_id)
-
-GROUP BY Director_id
-
- """,conn)
-
-df2
-primary_name	Director_id	movie_id	runtime_minutes	averagerating
-0	Orson Welles	nm0000080	tt0069049	122.0	6.9
-1	Woody Allen	nm0000095	tt1182350	98.0	6.3
-2	Luc Besson	nm0000108	tt0940656	101.0	5.5
-3	Kenneth Branagh	nm0000110	tt0800369	115.0	7.0
-4	John Carpenter	nm0000118	tt1369706	89.0	5.6
-...	...	...	...	...	...
-57236	Dahl Lee	nm9992852	tt8757056	NaN	8.4
-57237	Dongwoo Ko	nm9992853	tt8757056	NaN	8.4
-57238	Hepi Mita	nm9992905	tt8742574	89.0	7.3
-57239	Laura Cazador	nm9992927	tt7331606	94.0	8.5
-57240	Marija Ratkovic Vidakovic	nm9993281	tt8743078	52.0	6.6
-57241 rows × 5 columns
-```
 
 ```python
 # A query to create new columns sum of ratings and number of raatings so as to get the total average rating.
@@ -480,6 +207,7 @@ plt.title('Top 10 movie directors')
 ;
 ''
 ```
+![Directors](https://github.com/JIMWAMAE/dsc-phase-1-project/blob/master/img/Movie%20directors.png)
 
 From this data we can identify the directors whose movie average ratings are highest from a sample of 20 movies directed as the minimum movie count. This brings us to the conclusion that movie succes is related to the choice of director. We will now proceed with investigating the effect of writter selection on movie success.
 
@@ -548,6 +276,7 @@ plt.title('Top 10 movie Writters')
 ;
 ''
 ```
+![Writters](https://github.com/JIMWAMAE/dsc-phase-1-project/blob/master/img/Writters.png)
 
 This data represents the top 10 writters that have significantly had succesful movie writting carreers from a minimum sample of 20 movies. Equally the choice of a writter will have effect on the movie success.
 
@@ -559,68 +288,7 @@ Similarly in the movie industry there are various writters that are in the indus
 #### 4. What is the correlation between budget and revenue generated for a given movie.
 This aims at establishing the relationship between budget assigned to a movie and the profits that the movie will generate. We will evaluate the significance of increace in budget towards the revenue generated and also cunduct a correlation analysis to identify the relationship between the two and how they affect each other.
 
-```python
-# Importing csv to read the csv dataset
-import csv
 
-#creating a dataframe of the csv
-mov_budget= pd.read_csv('zippedData/tn.movie_budgets.csv')
-mov_budget
-id	release_date	movie	production_budget	domestic_gross	worldwide_gross
-0	1	Dec 18, 2009	Avatar	$425,000,000	$760,507,625	$2,776,345,279
-1	2	May 20, 2011	Pirates of the Caribbean: On Stranger Tides	$410,600,000	$241,063,875	$1,045,663,875
-2	3	Jun 7, 2019	Dark Phoenix	$350,000,000	$42,762,350	$149,762,350
-3	4	May 1, 2015	Avengers: Age of Ultron	$330,600,000	$459,005,868	$1,403,013,963
-4	5	Dec 15, 2017	Star Wars Ep. VIII: The Last Jedi	$317,000,000	$620,181,382	$1,316,721,747
-...	...	...	...	...	...	...
-5777	78	Dec 31, 2018	Red 11	$7,000	$0	$0
-5778	79	Apr 2, 1999	Following	$6,000	$48,482	$240,495
-5779	80	Jul 13, 2005	Return to the Land of Wonders	$5,000	$1,338	$1,338
-5780	81	Sep 29, 2015	A Plague So Pleasant	$1,400	$0	$0
-5781	82	Aug 5, 2005	My Date With Drew	$1,100	$181,041	$181,041
-5782 rows × 6 columns
-```
-
-Data cleaning
-we will start with cleaning the data so as to generate the correct insights.
-
-```python
-# removing the $ sign from the columns
-mov_budget.production_budget = mov_budget.production_budget.str.replace('$','') 
-mov_budget.domestic_gross = mov_budget.domestic_gross.str.replace('$','')
-mov_budget.worldwide_gross = mov_budget.worldwide_gross.str.replace('$','')
-# removing the commas from the columns
-mov_budget.production_budget = mov_budget.production_budget.str.replace(',','') 
-mov_budget.domestic_gross = mov_budget.domestic_gross.str.replace(',','')
-mov_budget.worldwide_gross = mov_budget.worldwide_gross.str.replace(',','')
-# converting the data type to int
-mov_budget.production_budget = mov_budget.production_budget.astype(int)
-mov_budget.domestic_gross = mov_budget.domestic_gross.astype(int)
-mov_budget.worldwide_gross = mov_budget.worldwide_gross.astype(float)
-We have succesfully converted the three columns to integers and floating point numerals. We will now proceed with dropping columns with 0 values.
-
-# removing 0 values
-mov_budget = mov_budget.loc[~ ((mov_budget.production_budget ==0)|(mov_budget.domestic_gross ==0)|(mov_budget.worldwide_gross ==0))]  
-Having cleaned the data we will now proceed with data visualisation.
-```
-
-```python
-#cleaned dataframe
-mov_budget
-id	release_date	movie	production_budget	domestic_gross	worldwide_gross
-0	1	Dec 18, 2009	Avatar	425000000	760507625	2.776345e+09
-1	2	May 20, 2011	Pirates of the Caribbean: On Stranger Tides	410600000	241063875	1.045664e+09
-2	3	Jun 7, 2019	Dark Phoenix	350000000	42762350	1.497624e+08
-3	4	May 1, 2015	Avengers: Age of Ultron	330600000	459005868	1.403014e+09
-4	5	Dec 15, 2017	Star Wars Ep. VIII: The Last Jedi	317000000	620181382	1.316722e+09
-...	...	...	...	...	...	...
-5775	76	May 26, 2006	Cavite	7000	70071	7.164400e+04
-5776	77	Dec 31, 2004	The Mongol King	7000	900	9.000000e+02
-5778	79	Apr 2, 1999	Following	6000	48482	2.404950e+05
-5779	80	Jul 13, 2005	Return to the Land of Wonders	5000	1338	1.338000e+03
-5781	82	Aug 5, 2005	My Date With Drew	1100	181041	1.810410e+05
-5234 rows × 6 columns
-```
 
 We need to create a new column known as revenue that combines the domestic gross with the worldwide gross so as to help us tabulate the total revenue generated and another column profits that will get the difference between revenues and the budget.
 
@@ -662,7 +330,8 @@ plt.ylabel('movies')
 plt.title('Movie Profits')
 plt.show()
 ```
-
+![Budget](https://github.com/JIMWAMAE/dsc-phase-1-project/blob/master/img/Production%20budget.png)
+![Profit](https://github.com/JIMWAMAE/dsc-phase-1-project/blob/master/img/Movie%20Profits.png)
 
 This visualisation shows that most movies have been produced within a tight budget . We will have to perfom a correlation analysis so as to identify whether the big expenditures in return generated high profits.
 
@@ -687,7 +356,7 @@ plt.ylabel('Profit')
 plt.title('Profits Vs Budget')
 Text(0.5, 1.0, 'Profits Vs Budget')
 ```
-
+![prof_budg_corr](https://github.com/JIMWAMAE/dsc-phase-1-project/blob/master/img/Prof%20vs%20budg.png)
 This scatter plot helps us visualize a possitive correlation between budget and profit.
 
 ```python
