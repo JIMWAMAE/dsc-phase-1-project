@@ -13,6 +13,7 @@ As a data scientist I have been given a task by Microsoft Movie studios to anali
 #### Business understanding.
 Microsoft is a start up business in the movie industry .They see all the big companies creating original video content and they want to get in on the fun. They have decided to create a new movie studio, but they don’t know anything about creating movies. We will conduct an exploratory data analysis so as to explore what types of films are currently doing the best at the box office. We will then translate our findings into actionable insights that the head of Microsoft's new movie studio can use to help decide what type of films to create.
 #### Data understanding
+
 We have been provided with various data sets for the study. This section will give us an overview of the data we will use to genrate our insights.
 
 1. The first data set we will use is the im.db database (https://github.com/JIMWAMAE/dsc-phase-1-project-v2-4/blob/master/zippedData/im.db) whose erd is shown below. It will give us data that relates to the movie genres and ratings from the tables movie_basics and movie_ratings. We will use the persons table and the directors to generate isight about director perfomance as well as writter perfomances.
@@ -367,8 +368,8 @@ conn.close()
 The budget assigned to a movie production is directly proportional to the profits generated.
 We would rather incurr a high budget towards production so as to generate more income from the movie.
 #### Findings
-Runtime is inversely related to movie average ratings. Long movies have lower ratings compared to short movies.
-Different genres perfom differently in the movie industry with regard to the ratings.
+1. Runtime is inversely related to movie average ratings. Long movies have lower ratings compared to short movies.
+2. Different genres perfom differently in the movie industry with regard to the ratings.
 Documentary(7.3)
 Drama(6.5)
 Comedy,Drama(6.4)
@@ -381,12 +382,12 @@ Action(5.6)
 Thriller(5.5)
 Horror,Thriller(4.7)
 Horror(4.7)
-Different writters and dirrectors perfom differently based on factors such as experience and expertise in the industry by looking at their average rating movies perfomance.
-Movie budget and revenue genaration are directly related where high budget generates more revenue.
+3. Different writters and dirrectors perfom differently based on factors such as experience and expertise in the industry by looking at their average rating movies perfomance.
+4. Movie budget and revenue genaration are directly related where high budget generates more revenue.
 #### Recommendations
-The studio should aim at producing movies with relatively short runtime as it is inversely related to average rating. This is because the movies with short runtimes ended up having more average ratings. This will entail avoiding unnecesary scenes and being brief and on point with the shooting.
-The studio should aim at producing the top preffered genres that have a high average rating which means they will generate high profits compared to the relatively unwatched genres.
-The studio should aim at using the top directors and writters according to experience in the industry according to their average ratings as they will enable the studio to produce top tier movie quality that will in turn generate better returns for the business.
-The studio should aim at assigning the required budget and not under funding their movie projects since from the data movies with high budgets generated higher revenue. This entails using the best technology and tools possible to get the best quality.
+1. The studio should aim at producing movies with relatively short runtime as it is inversely related to average rating. This is because the movies with short runtimes ended up having more average ratings. This will entail avoiding unnecesary scenes and being brief and on point with the shooting.
+2. The studio should aim at producing the top preffered genres that have a high average rating which means they will generate high profits compared to the relatively unwatched genres.
+3. The studio should aim at using the top directors and writters according to experience in the industry according to their average ratings as they will enable the studio to produce top tier movie quality that will in turn generate better returns for the business.
+4. The studio should aim at assigning the required budget and not under funding their movie projects since from the data movies with high budgets generated higher revenue. This entails using the best technology and tools possible to get the best quality.
 #### Summary
 In this project we have familiarized with the movie industry and the factors that affect the movie success so as to advise microsoft movie studios in their start up.
